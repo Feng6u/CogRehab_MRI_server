@@ -1,13 +1,18 @@
 #!/bin/bash
 
-#This command has one input: the subject ID
-# output is a text file containing the warped target coordinates in the folder where you had the T1. 
+#This shell script creates coordinates used for TMS-EEG 
+
+#The final output is a text file containing the warped target coordinates in the folder where you had the T1. 
 # you need to have fsl to run this script. 
 
-subj=$1
-parentdir="$(dirname "$SUBJECTS_DIR")"
-pd=${parentdir}/TMS_EEG/${subj}/
-T1=${pd}T1.nii
+#Created by Dr. Lauri Tuominen in 2019. Modified by Feng in May 2020. 
+
+ID=$1 #takes first input as ID
+TP=$2 #takes second input as TP
+
+COGREH_DIR="$(dirname "$SUBJECTS_DIR")" #defines COGREH_DIR
+pd=${COGREH_DIR}/TMS_EEG/${ID}_TP${TP}/ #this is the folder for the input of T1 and the output of txt file
+T1=${pd}T1.nii #tells the script the location of T1 file
 
 
 bet ${T1} ${T1}_betted
