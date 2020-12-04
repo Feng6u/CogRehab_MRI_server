@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #This shell script creates all required folders for a specific participant at a specific time point to prepare for FreeSurfer analysis, and also copies over the MRI and behavoiral data files from FENG_DIR.
-#Created by Feng Gu in September 2019. Modified by Feng Gu in May 2020. 
+#Created by Feng Gu in September 2019. Last modified by Feng Gu in December 2020. 
 
 
 ###################### SETTING UP ###########################
@@ -57,12 +57,25 @@ fi
 BEH_DIRS="VM/VM_Encoding VM/VM_Recog EFN_BACK FB"
 COGREH_DIR="$(dirname "$SUBJECTS_DIR")"
 FENG_DIR="/group/guimond_CogReh/feng/CogRehab"
+
+if [ $TP -eq 1 ] #because NM is only measured in T1
+then
 ONE_RUN="T1 RESTING VM/VM_Recog NM"  #these 4 MRI tasks have 1 run each. Define them as ONE_RUN
+else
+ONE_RUN="T1 RESTING VM/VM_Recog"  #these 3 MRI tasks have 1 run each. Define them as ONE_RUN
+fi
+
 TWO_RUNS="VM/VM_Encoding EFN_BACK FB" #these 3 MRI tasks have 2 runs each. Define them as TWO_RUNS
 RUNS="Run1 Run2" #define RUNS as Run1 and Run2. Will be used to name folders
-DIRS="bold anat resting nm par_file" #these are the folders needed for every ID_TP under "subjects" folder
-TASKS="001 002 003 004 005 006 007" #these are folders needed under "bold" folder, one folder for each fMRI task
 
+if [ $TP -eq 1 ] #because NM is only measured in T1
+then
+DIRS="bold anat resting nm par_file" #these are the folders needed for TP1 under "subjects" folder
+else
+DIRS="bold anat resting par_file" #these are the folders needed for TP2 under "subjects" folder
+fi
+
+TASKS="001 002 003 004 005 006 007" #these are folders needed under "bold" folder, one folder for each fMRI task
 
 ########################### CREATING/POPULATING FOLDERS ###########################
 
@@ -125,8 +138,11 @@ cp $FENG_DIR/MRI_scan_data/EFN_BACK/${ID}_TP${TP}/Run2/nii/f.nii $COGREH_DIR/sub
 cp $FENG_DIR/MRI_scan_data/FB/${ID}_TP${TP}/Run1/nii/f.nii $COGREH_DIR/subjects/${ID}_TP${TP}/bold/006
 cp $FENG_DIR/MRI_scan_data/FB/${ID}_TP${TP}/Run2/nii/f.nii $COGREH_DIR/subjects/${ID}_TP${TP}/bold/007
 cp $FENG_DIR/MRI_scan_data/RESTING/${ID}_TP${TP}/nii/resting.nii $COGREH_DIR/subjects/${ID}_TP${TP}/resting/resting.nii
-cp $FENG_DIR/MRI_scan_data/NM/${ID}_TP${TP}/nii/nm.nii $COGREH_DIR/subjects/${ID}_TP${TP}/nm/nm.nii
 
+if [ $TP -eq 1 ] #because NM is only measured in T1
+then
+cp $FENG_DIR/MRI_scan_data/NM/${ID}_TP${TP}/nii/nm.nii $COGREH_DIR/subjects/${ID}_TP${TP}/nm/nm.nii
+fi
 
 #create a file called subjectname that contains ID_TP information for FreeSurfer
 echo ${ID}_TP${TP} > $COGREH_DIR/subjects/${ID}_TP${TP}/subjectname
